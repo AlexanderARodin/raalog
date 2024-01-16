@@ -2,24 +2,19 @@
 help:
 	@cat Makefile
 
+all: test release.native release.wasm
+
 test:
-	@cargo test -- --show-output
+	@cargo test
 
-run: release
-	@cargo run --release
-
-release:
-	@cargo rustc --release -- -C prefer-dynamic
+release.native:
+	@cargo build --release
 release.wasm:
 	@cargo build --release --target wasm32-unknown-unknown
 
 
-git.pushall: git.commitall
-	@git push
-git.commitall: git.addall
-	@if [ -n "$(shell git status -s)" ] ; then git commit -m 'saving'; else echo '--- nothing to commit'; fi
-git.addall:
-	@git add .
+dev.test:
+	@cargo test -- --show-output
 
-clean: clean.dist
+clean:
 	@cargo clean
