@@ -1,7 +1,8 @@
 
 
 pub(crate) fn add_log_line(line: String, is_error: bool) {
-    internal::print_echo( &line, is_error);
+    let echo_line = format!("[APP] {line}");
+    internal::print_echo( &echo_line, is_error);
     internal::add_to_history( &line, is_error );
 }
 pub(crate) fn get_history() -> String {
@@ -42,14 +43,40 @@ pub(crate) mod internal {
         }
         *hist += &msg;
     }
+    #[ cfg(not(target_arch = "wasm32")) ]
     pub(super) fn print_echo( msg: &String, is_error: bool ) {
         if is_error {
-            eprintln!("[APP] {msg}");
+            eprintln!("{msg}");
         }else{
-            println!("[APP] {msg}");
+            println!("{msg}");
         }
     }
+    #[ cfg(target_arch = "wasm32") ]
+    pub(super) fn print_echo( msg: &String, is_error: bool ) {
+        if is_error {
+            super::wasming::error(msg.to_string());
+        }else{
+            super::wasming::log(msg);
+        }
+    }
+
+
+
 }
 
+#[ cfg(target_arch = "wasm32") ]
+pub(super) mod wasming {
+    #[ cfg(target_arch = "wasm32") ]
+    use wasm_bindgen::prelude::*;
+
+    #[wasm_bindgen]
+    extern "C" {
+        #[wasm_bindgen(js_namespace = console)]
+        pub(super) fn log(value: &str);
+
+        #[wasm_bindgen(js_namespace = console)]
+        pub(super) fn error(msg: String);
+    }
+}
 
 
