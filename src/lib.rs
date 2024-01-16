@@ -1,6 +1,6 @@
 mod backend;
 mod interface;
-pub use interface::log as raalog;
+pub use interface::log;
 
 
 //  //  //  //  //  //  //  //
@@ -8,7 +8,7 @@ pub use interface::log as raalog;
 //  //  //  //  //  //  //  //
 #[cfg(test)]
 mod raalog_tests {
-    use super::raalog as log;
+    use super::log;
     use super::backend::internal::test_hard_reset as clear_history;
 
     use sequential_test::sequential;
