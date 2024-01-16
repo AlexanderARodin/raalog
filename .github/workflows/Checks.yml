@@ -1,12 +1,6 @@
 name: checks
 on:
-  push:
-    branches: 
-      - main
-      - dev
   pull_request:
-    [opened, reopened]
-
 
 jobs:
   make-pages:
