@@ -1,6 +1,7 @@
 name: checks
 on:
   pull_request:
+  push:
 
 jobs:
   make-pages:
