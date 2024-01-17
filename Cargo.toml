@@ -8,6 +8,8 @@ edition = "2021"
 
 [dependencies]
 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2.90"
 
 [dev-dependencies]
 sequential-test = "0.2.4"
