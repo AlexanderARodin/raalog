@@ -31,7 +31,7 @@ pub(crate) mod internal {
         hist.clone()
     }
 
-    pub(super) fn add_to_history( msg: &String, is_error: bool ) {
+    pub(super) fn add_to_history( msg: &str, is_error: bool ) {
         let mut hist = HISTORY
                         .lock()
                         .expect("Panic on locking logs HISTORY!!");
@@ -52,7 +52,7 @@ pub(crate) mod internal {
         }
     }
     #[ cfg(target_arch = "wasm32") ]
-    pub(super) fn print_echo( msg: &String, is_error: bool ) {
+    pub(super) fn print_echo( msg: &str, is_error: bool ) {
         if is_error {
             super::wasming::error(msg.to_string());
         }else{
