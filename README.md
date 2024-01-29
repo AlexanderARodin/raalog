@@ -1,2 +1,4 @@
 # raalog
-logs in buffer AND echo it in console (terminal OR js-console)
+- cross-platfom: native or WASM
+- collect info and error messages into app buffer
+- print messages to terminal or browser console (for WASM)
