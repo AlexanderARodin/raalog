@@ -66,9 +66,10 @@ impl RaaLogger {
             .expect("RwLock can't read RaaLogLogger.Buffer(buf)");
         buf.push(s);
     }
-    fn log_to_file(mut file: &std::fs::File, s: String) {
+    fn log_to_file(mut file: &std::fs::File, s: String) ->Result<()> {
         use std::io::Write;
-        writeln!(file, "{}", s);
+        writeln!(file, "{}", s)?;
+        Ok(())
     }
 }
 
@@ -93,7 +94,7 @@ impl log::Log for RaaLogger {
             RaaLoggerMode::Off => return,
             RaaLoggerMode::File(file) => {
                 let s = format!("[{:>5}]: {}", record.level(), record.args());
-                RaaLogger::log_to_file(file, s);
+                let _ = RaaLogger::log_to_file(file, s);
             }
             RaaLoggerMode::Buffer(buf) => {
                 let s = format!("[{:>5}]: {}", record.level(), record.args());
