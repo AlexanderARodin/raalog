@@ -5,6 +5,9 @@ mod logger;
 
 use logger::RaaLogger;
 
+#[allow(unused_imports)]
+pub use log::{debug, error, info, trace, warn};
+
 //  //  //  //  //  //  //  //
 
 pub fn init() -> anyhow::Result<&'static RaaLogger> {
