@@ -4,7 +4,6 @@
 mod logger;
 
 use logger::RaaLogger;
-//use logger::RAA_LOGGER as LOG;
 
 //  //  //  //  //  //  //  //
 
