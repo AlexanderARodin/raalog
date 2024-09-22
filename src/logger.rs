@@ -30,8 +30,13 @@ impl RaaLogger {
         Ok(&RAA_LOGGER)
     }
 
+    pub fn set_level(&self, level: log::LevelFilter) -> &Self {
+        log::set_max_level(level);
+        self
+    }
+
     pub fn set_file_mode(&self, file_name: &str) -> Result<&Self> {
-        let file = std::fs::File::options().append(true).open(file_name)?;
+        let file = std::fs::File::options().append(true).create(true).open(file_name)?;
         self.set_mode(RaaLoggerMode::File(file));
         Ok(self)
     }
