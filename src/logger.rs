@@ -2,6 +2,8 @@ use anyhow::Result;
 use log::{Metadata, Record};
 use std::sync::RwLock;
 
+mod convertor;
+
 //  //  //  //  //  //  //  //
 static RAA_LOGGER: RaaLogger = RaaLogger {
     mode: RwLock::new(RaaLoggerMode::StdErr),
@@ -36,7 +38,10 @@ impl RaaLogger {
     }
 
     pub fn set_file_mode(&self, file_name: &str) -> Result<&Self> {
-        let file = std::fs::File::options().append(true).create(true).open(file_name)?;
+        let file = std::fs::File::options()
+            .append(true)
+            .create(true)
+            .open(file_name)?;
         self.set_mode(RaaLoggerMode::File(file));
         Ok(self)
     }
@@ -71,10 +76,35 @@ impl RaaLogger {
             .expect("RwLock can't read RaaLogLogger.Buffer(buf)");
         buf.push(s);
     }
-    fn log_to_file(mut file: &std::fs::File, s: String) ->Result<()> {
+
+    fn log_to_file(mut file: &std::fs::File, s: String) -> Result<()> {
         use std::io::Write;
         writeln!(file, "{}", s)?;
         Ok(())
+    }
+
+    fn reformat(record: &Record) -> String {
+        let parsed = convertor::convert_to_lines(record.args().as_str());
+        let mut result = String::new();
+
+        for line in parsed {
+            if !result.is_empty() {
+                result.push('\n');
+            }
+            //result.push_str(&line.0);
+            let sign = match line.1 {
+                    convertor::LinePosition::NULL   => '?',
+                    convertor::LinePosition::Single => ':',
+                    convertor::LinePosition::First  => '*',
+                    convertor::LinePosition::Middle => '│',
+                    convertor::LinePosition::Last   => '└',
+            };
+            result.push_str(
+                &format!("[{:>5}] {} {}", record.level(), sign, line.0)
+            );
+        }
+
+        result
     }
 }
 
@@ -98,19 +128,20 @@ impl log::Log for RaaLogger {
         match mode {
             RaaLoggerMode::Off => return,
             RaaLoggerMode::File(file) => {
-                let s = format!("[{:>5}]: {}", record.level(), record.args());
+                let s = Self::reformat(record);
                 let _ = RaaLogger::log_to_file(file, s);
             }
             RaaLoggerMode::Buffer(buf) => {
-                let s = format!("[{:>5}]: {}", record.level(), record.args());
+                //let s = format!("[{:>5}]: {}", record.level(), record.args());
+                let s = Self::reformat(record);
                 RaaLogger::log_to_buffer(buf, s);
             }
             RaaLoggerMode::StdErr => {
-                let s = format!("[{:>5}]: {}", record.level(), record.args());
+                let s = Self::reformat(record);
                 eprintln!("{}", s);
             }
             RaaLoggerMode::StdOut => {
-                let s = format!("[{:>5}]: {}", record.level(), record.args());
+                let s = Self::reformat(record);
                 println!("{}", s);
             }
         }
@@ -162,21 +193,21 @@ mod basic_validation {
         let comparator = format!(
             "{:#?}",
             vec![
-                "[ INFO]: some info",
-                "[ WARN]: some warn",
-                "[ERROR]: some error",
-                "[ WARN]: some warn",
-                "[ERROR]: some error",
-                "[DEBUG]: some debug",
-                "[ INFO]: some info",
-                "[ WARN]: some warn",
-                "[ERROR]: some error",
-                "[TRACE]: some trace",
-                "[DEBUG]: some debug",
-                "[ INFO]: some info",
-                "[ WARN]: some warn",
-                "[ERROR]: some error",
-                "[ERROR]: some error",
+                "[ INFO] : some info",
+                "[ WARN] : some warn",
+                "[ERROR] : some error",
+                "[ WARN] : some warn",
+                "[ERROR] : some error",
+                "[DEBUG] : some debug",
+                "[ INFO] : some info",
+                "[ WARN] : some warn",
+                "[ERROR] : some error",
+                "[TRACE] : some trace",
+                "[DEBUG] : some debug",
+                "[ INFO] : some info",
+                "[ WARN] : some warn",
+                "[ERROR] : some error",
+                "[ERROR] : some error",
             ]
         );
 

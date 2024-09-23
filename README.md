@@ -29,3 +29,6 @@ fn main() -> anyhow::Result<()> {
 - [x] to StdErr
 - [x] to StdOut
 - [x] to File
+
+## others
+- [x] multi-line
