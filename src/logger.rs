@@ -84,7 +84,9 @@ impl RaaLogger {
     }
 
     fn reformat(record: &Record) -> String {
-        let parsed = convertor::convert_to_lines(record.args().as_str());
+        let message = record.args().to_string();
+        let parsed = convertor::convert_to_lines(Some(&message));
+        //let parsed = convertor::convert_to_lines(record.args().as_str());
         let mut result = String::new();
 
         for line in parsed {
