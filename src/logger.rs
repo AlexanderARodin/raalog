@@ -21,6 +21,11 @@ enum RaaLoggerMode {
 pub struct RaaLogger {
     mode: RwLock<RaaLoggerMode>,
 }
+impl Drop for RaaLogger {
+    fn drop(&mut self) {
+        log::warn!("RaaLogger has stopped");
+    }
+}
 
 #[allow(dead_code)]
 impl RaaLogger {
