@@ -42,7 +42,7 @@ impl RaaLogger {
         self
     }
 
-    pub fn set_file_mode(&self, file_name: &str) -> Result<&Self> {
+    pub fn set_file_mode<P:AsRef<std::path::Path>>(&self, file_name: &P) -> Result<&Self> {
         let file = std::fs::File::options()
             .append(true)
             .create(true)
