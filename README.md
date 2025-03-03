@@ -2,21 +2,36 @@
 
 ## usage
 ```rust
+use eyre::Result;
 #[allow(unused_imports)]
 use raalog::{debug, error, info, trace, warn};
 
-fn main() -> anyhow::Result<()> {
-    let log_backend = std::env::args().nth(1).expect("no file for logging");
-    println!("\n----> {}", log_backend);
+fn main() -> Result<()> {
+    log_init();
 
-    raalog::init()?
-        .set_file_mode(&log_backend)?
+    trace!("############\n<-----\n.\n ");
+    Ok(())
+}
+
+//  //  //  //  //  //  //  //
+fn log_init() {
+    raalog::init()
+        .expect("unable init log system")
+        .set_file_mode(&"/tmp/rust_debug.log")
+        .expect("unable to set file mode of logger")
         .set_level(raalog::LevelFilter::Trace);
 
-    log::error!("mini error");
-    log::info!("mini info");
+    trace!("\n.\n----->\n############");
+    set_panic_hook();
+}
 
-    Ok(())
+//  //  //  //  //  //  //  //
+fn set_panic_hook() {
+    let hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        error!("############\nFATAL!\n{}\n<-----\n.\n ", info);
+        hook(info);
+    }));
 }
 ```
 
